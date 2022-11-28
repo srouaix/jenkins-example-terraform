@@ -17,7 +17,7 @@ pipeline {
     stage('terraform plan') {
       steps {
         sh 'terraform init'
-        sh "terraform plan --out plan"
+        sh "terraform plan --out plan -no-color"
 
         
       }
@@ -27,18 +27,10 @@ pipeline {
     stage ("deploy") {
         input {
             message 'Apply ?'
-            parameters {
-                booleanParam(name: 'TERRAFORM_APPLY', defaultValue: false, description: 'Apply terrfaorm plan')
-            }
         }
       steps {
         script {
-            if (TERRAFORM_APPLY.toBoolean()) {
-                terraform apply plan -auto-approve -no-color
-            }
-            else {
-                echo "Cancel Apply"
-            }
+            terraform apply plan -auto-approve -no-color
         }
 
        
