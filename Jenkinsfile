@@ -32,10 +32,11 @@ pipeline {
         sh 'terraform apply plan -auto-approve -no-color'
     }
   }
+  }
   post {
     always {
       cleanWs()
     }
   }
 }
-}
+
