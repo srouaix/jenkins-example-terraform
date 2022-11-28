@@ -16,7 +16,7 @@ pipeline {
     }
     stage('terraform plan') {
       steps {
-        sh 'terraform init'
+        sh 'terraform init -no-color'
         sh "terraform plan --out plan -no-color"
 
         
@@ -29,12 +29,8 @@ pipeline {
             message 'Apply ?'
         }
       steps {
-        script {
-            terraform apply plan -auto-approve -no-color
-        }
-
-       
-        }
+            sh "terraform apply plan -auto-approve -no-color"
+       }
     }
     }
     post {
