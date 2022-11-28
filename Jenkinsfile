@@ -14,7 +14,7 @@ pipeline {
         checkout scm
       }
     }
-     stage('terraform plan') {
+    stage('terraform plan') {
       steps {
         sh 'terraform init'
         sh "terraform plan --out plan"
@@ -23,20 +23,32 @@ pipeline {
       }
     }
 
-    stage ("deploy") {
-      steps {
-        def deploy_validation = input(
-            id: 'Deploy',
-            message: 'Let\'s continue the deploy plan',
-            type: "boolean")
-        sh 'terraform apply plan -auto-approve -no-color'
-    }
-  }
-  }
-  post {
-    always {
-      cleanWs()
-    }
-  }
-}
 
+    stage ("deploy") {
+        input {
+            message 'Apply ?'
+            parameters {
+                booleanParam(name: 'TERRAFORM_APPLY', defaultValue: false, description: 'Apply terrfaorm plan')
+            }
+        }
+      steps {
+        script {
+            if (TERRAFORM_APPLY.toBoolean()) {
+                terraform apply plan -auto-approve -no-color
+            }
+            else {
+                echo "Cancel Apply"
+            }
+        }
+
+       
+        }
+    }
+    }
+    post {
+        always {
+        cleanWs()
+        }
+    }
+
+}
